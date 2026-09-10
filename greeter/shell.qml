@@ -106,8 +106,12 @@ Window {
                                                 function onReadyToLaunch()
                                                 {
                                                     var session = Sessions.current
-                                                    var execCmd = ((session && session.exec) ? session.exec: (Quickshell.env("SHELL") || "/bin/sh"))
-                                                    Greetd.launch(["sh", "-c", execCmd], [], true)
+                                                    if (!session) return
+
+                                                    var cmd = Array.isArray(session.exec) ? session.exec: ["sh", "-c", session.exec]
+                                                    var env = session.env || []
+
+                                                    Greetd.launch(cmd, env, true)
                                                 }
                                             }
 
@@ -251,7 +255,7 @@ Window {
                                                             text: window.authErrorMessage !== "" ? window.authErrorMessage : Translations.current.wrongPassword
                                                             color: "#E5484D"
                                                             font.family: "Inter"
-                                                            font.pixelSize: 12
+                                                            font.pixelSize: 14
                                                             width: parent.width
                                                             horizontalAlignment: Text.AlignHCenter
                                                         }
