@@ -34,6 +34,7 @@ Column {
 
                     spacing: 16
                     width: 100
+                    clip: true
 
                     readonly property color colorLight: "#F8F8F8"
 

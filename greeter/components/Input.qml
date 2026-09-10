@@ -62,7 +62,7 @@ Column {
                                                 echoMode: root.isPassword && !toggle.checked ? TextInput.Password : TextInput.Normal
                                                 placeholderText: root.placeholder
                                                 font.family: "Inter"
-                                                font.pixelSize: 14
+                                                font.pixelSize: 16
                                                 color: root.colorLight
                                                 placeholderTextColor: Qt.rgba(1, 1, 1, 0.5)
                                                 background: null
@@ -96,7 +96,7 @@ Column {
                                                 text: root.toggleLabel
                                                 color: root.colorLight
                                                 font.family: "Inter"
-                                                font.pixelSize: 10
+                                                font.pixelSize: 14
 
                                                 MouseArea {
                                                     anchors.fill: parent

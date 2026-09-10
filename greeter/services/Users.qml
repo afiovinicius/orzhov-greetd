@@ -23,23 +23,17 @@ import Quickshell.Io
 
 QtObject {
     id: root
-
     property var list: []
     property bool loaded: false
-
         function reload()
         { proc.running = true }
-
-            // Declarando o Process como uma propriedade nomeada resolve o erro de default property
             property Process proc: Process {
                 running: false
-                command: ["sh", "-c", "getent passwd | awk -F: '($3>=1000 && $3<60000 && $7 !~ /(nologin|false)$/) {print $1\"|\"$5\"|\"$6}'"]
-
+                command: ["sh", "-c", "getent passwd | awk -F: '($3>=1000 && $3<60000 && $7 !~ /(nologin|false)$/) { face=\"\"; if (system(\"test -r /var/lib/AccountsService/icons/\"$1) == 0) face=\"/var/lib/AccountsService/icons/\"$1; else if (system(\"test -r \"$6\"/.face\") == 0) face=$6\"/.face\"; print $1\"|\"$5\"|\"face }'"]
                 stdout: StdioCollector {
                     onStreamFinished: {
                         var raw = this.text.trim()
                         var users = []
-
                         if (raw !== "")
                         {
                             var lines = raw.split("\n")
@@ -48,21 +42,18 @@ QtObject {
                                 var name = parts[0] || ""
                                 if (name === "") continue
                                 var realName = (parts[1] || "").split(", ")[0]
-                                var home = parts[2] || ""
-                                var icon = home !== "" ? "file://" + home + "/.face" : ""
+                                var iconPath = parts[2] || ""
                                 users.push({
                                 name: name,
                                 realName: realName !== "" ? realName : name,
-                                icon: icon
+                                icon: iconPath !== "" ? "file://" + iconPath : ""
                             })
                         }
                     }
-
                     root.list = users
                     root.loaded = true
                 }
             }
         }
-
         Component.onCompleted: reload()
     }

@@ -1,5 +1,6 @@
 import QtQuick
 import QtQuick.Window
+import Qt5Compat.GraphicalEffects
 import Quickshell
 import Quickshell.Io
 import Quickshell.Services.Greetd
@@ -32,7 +33,6 @@ Window {
     visible: true
     visibility: Window.FullScreen
     color: "black"
-
 
     readonly property string backgroundPath: {
         var env = Quickshell.env("ORZHOV_BACKGROUND")
@@ -77,6 +77,24 @@ Window {
                                                     }
 
                                                 Connections {
+                                                    target: Users
+                                                    function onLoadedChanged()
+                                                    {
+                                                        if (Users.loaded && Users.list.length === 1)
+                                                        {
+                                                            window.pickUser(Users.list[0])
+                                                        }
+                                                    }
+                                                }
+
+                                                Component.onCompleted: {
+                                                    if (Users.loaded && Users.list.length === 1)
+                                                    {
+                                                        window.pickUser(Users.list[0])
+                                                    }
+                                                }
+
+                                                Connections {
                                                     target: Greetd
 
                                                     function onAuthMessage(message, error, responseRequired, echoResponse)
@@ -112,6 +130,9 @@ Window {
                                                 }
                                             }
 
+                                            // ==========================================
+                                            // BACKGROUND E APLICAÇÃO DO BLUR DE 24
+                                            // ==========================================
                                             Image {
                                                 id: background
                                                 anchors.fill: parent
@@ -119,6 +140,13 @@ Window {
                                                 fillMode: Image.PreserveAspectCrop
                                                 asynchronous: true
                                                 cache: true
+                                            }
+
+                                            FastBlur {
+                                                anchors.fill: background
+                                                source: background
+                                                radius: 24
+                                                transparentBorder: false
                                             }
 
                                             Rectangle {
@@ -143,7 +171,7 @@ Window {
                                                     text: Translations.current.greetdUnavailable
                                                     color: "#F8F8F8"
                                                     font.family: "Inter"
-                                                    font.pixelSize: 12
+                                                    font.pixelSize: 14
                                                 }
                                             }
 
@@ -211,7 +239,7 @@ Window {
                                                             text: window.activeUserRealName !== "" ? window.activeUserRealName : window.activeUser
                                                             color: "#F8F8F8"
                                                             font.family: "Inter"
-                                                            font.pixelSize: 14
+                                                            font.pixelSize: 16
                                                             font.weight: Font.Medium
                                                         }
 
@@ -271,60 +299,66 @@ Window {
                                                         }
                                                     }
 
+                                                    // ==========================================
+                                                    // RODAPÉ ESQUERDO: SELEÇÃO DE SESSÃO COM DROPDOWN E ÍCONE
+                                                    // ==========================================
                                                     Row {
                                                         anchors.left: parent.left
                                                         anchors.bottom: parent.bottom
                                                         anchors.margins: 48
-                                                        spacing: 8
-
-                                                        Repeater {
-                                                            model: Sessions.list
-                                                            delegate: Rectangle {
-                                                                width: 160
-                                                                height: 40
-                                                                radius: 14
-                                                                antialiasing: true
-                                                                visible: index === Sessions.currentIndex
-                                                                color: Qt.rgba(1, 1, 1, 0.14)
-                                                                Text {
-                                                                    anchors.centerIn: parent
-                                                                    text: modelData.name
-                                                                    color: "#F8F8F8"
-                                                                    font.family: "Inter"
-                                                                    font.pixelSize: 14
-                                                                }
-                                                                MouseArea {
-                                                                    anchors.fill: parent
-                                                                    cursorShape: Qt.PointingHandCursor
-                                                                    onClicked: Sessions.select((Sessions.currentIndex + 1) % Sessions.list.length)
-                                                                }
-                                                            }
-                                                        }
-                                                    }
-
-                                                    Row {
-                                                        anchors.right: parent.right
-                                                        anchors.bottom: parent.bottom
-                                                        anchors.margins: 48
                                                         spacing: 12
 
-                                                        Button {
-                                                            text: Translations.current.sleep
-                                                            onClicked: powerProc.exec(["systemctl", "suspend"])
-                                                        }
-                                                        Button {
-                                                            text: Translations.current.reboot
-                                                            onClicked: powerProc.exec(["systemctl", "reboot"])
-                                                        }
-                                                        Button {
-                                                            text: Translations.current.shutdown
-                                                            onClicked: powerProc.exec(["systemctl", "poweroff"])
+                                                        Dropdown {
+                                                            id: sessionDropdown
+                                                            // width: 180
+                                                            icon: "../assets/icon-session.svg"
+                                                            model: {
+                                                                var names = []
+                                                                for (var i = 0; i < Sessions.list.length; i++) {
+                                                                    names.push(Sessions.list[i].name)
+                                                                }
+                                                                return names
+                                                            }
+                                                            currentIndex: Sessions.currentIndex
+                                                            onActivated: (index) => {
+                                                            Sessions.select(index)
                                                         }
                                                     }
 
-                                                    Process {
-                                                        id: powerProc
-                                                        function exec(cmd)
-                                                        { command = cmd; running = true }
+                                                    // LayoutKbd {
+                                                    //     width: 90
+                                                    // }
+                                                }
+
+                                                // ==========================================
+                                                // RODAPÉ DIREITO: OPÇÕES DE ENERGIA COM DROPDOWN E ÍCONE
+                                                // ==========================================
+                                                Row {
+                                                    anchors.right: parent.right
+                                                    anchors.bottom: parent.bottom
+                                                    anchors.margins: 48
+                                                    spacing: 12
+
+                                                    Dropdown {
+                                                        id: powerDropdown
+                                                        // width: 150
+                                                        icon: "../assets/icon-config.svg"
+                                                        model: [Translations.current.sleep, Translations.current.reboot, Translations.current.shutdown]
+                                                        currentIndex: 0
+                                                        onActivated: (index) => {
+                                                        if (index === 0) powerProc.exec(["systemctl", "suspend"])
+                                                            else if (index === 1) powerProc.exec(["systemctl", "reboot"])
+                                                        else if (index === 2) powerProc.exec(["systemctl", "poweroff"])
                                                         }
                                                     }
+                                                }
+
+                                                Process {
+                                                    id: powerProc
+                                                    function exec(cmd)
+                                                    {
+                                                        command = cmd
+                                                        running = true
+                                                    }
+                                                }
+                                            }
