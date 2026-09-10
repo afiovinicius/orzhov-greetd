@@ -54,15 +54,20 @@ log "Instalando launcher em /usr/local/bin..."
 install -Dm755 "$TMP_DIR/src/bin/orzhov-greeter-launcher" /usr/local/bin/orzhov-greeter-launcher
 
 log "Instalando config do QuickShell em /etc/xdg/orzhov-greeter..."
-rm -rf /etc/xdg/orzhov-greeter
-cp -r "$TMP_DIR/src/greeter" /etc/xdg/orzhov-greeter
-chmod -R a+rX /etc/xdg/orzhov-greeter
+rm -rf /etc/xdg/quickshell/orzhov-greeter
+mkdir -p /etc/xdg/quickshell
+cp -r "$TMP_DIR/src/greeter" /etc/xdg/quickshell/orzhov-greeter
+chmod -R a+rX /etc/xdg/quickshell/orzhov-greeter
 
 # --- 3. usuário greeter --------------------------------------------------
 if ! id greeter >/dev/null 2>&1; then
   log "Criando usuário 'greeter'..."
-  useradd -M -G input render sys video greeter
+  useradd -M -G input render video greeter
+else
+  log "Usuário 'greeter' já existe. Atualizando grupos de acesso..."
+  usermod -aG video,render,input greeter
 fi
+
 
 # --- 4. config.toml do greetd (com backup) -------------------------------
 mkdir -p /etc/greetd

@@ -1,2 +1,0 @@
-module components
-singleton Translations 1.0 Translations.qml

@@ -1,3 +1,4 @@
 module services
 singleton Users 1.0 Users.qml
 singleton Sessions 1.0 Sessions.qml
+singleton Translations 1.0 Translations.qml
