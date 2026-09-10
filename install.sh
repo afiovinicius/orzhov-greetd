@@ -38,7 +38,7 @@ done
 if [ -n "$missing" ]; then
   warn "Faltando:$missing"
   if command -v pacman >/dev/null 2>&1; then
-    log "Detectado pacman. Tentando instalar via AUR helper (yay)..."
+    log "Detectado pacman, instalando dependências..."
     sudo pacman -S --needed --noconfirm greetd cage quickshell || die "Falha instalando dependências"
   else
     die "Instale manualmente:$missing (greetd, cage e quickshell) e rode o script de novo."
