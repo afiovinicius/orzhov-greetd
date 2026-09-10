@@ -1,4 +1,5 @@
 import QtQuick
+import QtQuick.Window
 import Quickshell
 import Quickshell.Io
 import Quickshell.Services.Greetd
@@ -25,12 +26,13 @@ import "services"
 * ============================================================================
 */
 
-PanelWindow {
+Window {
     id: window
 
-    anchors { top: true; bottom: true; left: true; right: true }
-    color: "transparent"
-    focusable: true
+    visible: true
+    visibility: Window.FullScreen
+    color: "black"
+
 
     readonly property string backgroundPath: {
         var env = Quickshell.env("ORZHOV_BACKGROUND")
