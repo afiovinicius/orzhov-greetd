@@ -1,5 +1,3 @@
-# /etc/greetd/config.toml
-#
 # Referência: https://man.archlinux.org/man/greetd.5.en
 #
 # `command` roda como o usuário `greeter`. Trocamos o agreety padrão pelo

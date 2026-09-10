@@ -68,7 +68,6 @@ else
   usermod -aG video,render,input greeter
 fi
 
-
 # --- 4. config.toml do greetd (com backup) -------------------------------
 mkdir -p /etc/greetd
 if [ -f /etc/greetd/config.toml ]; then
@@ -76,6 +75,7 @@ if [ -f /etc/greetd/config.toml ]; then
   log "Backup do config.toml anterior criado."
 fi
 install -Dm644 "$TMP_DIR/src/etc/greetd/config.toml" /etc/greetd/config.toml
+install -Dm644 "$TMP_DIR/src/etc/greetd/orzhov.env" /etc/greetd/orzhov.env
 chown -R greeter:greeter /etc/greetd
 
 # --- 5. habilita o serviço -------------------------------------------------
