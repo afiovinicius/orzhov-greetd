@@ -74,8 +74,18 @@ install -Dm644 "$TMP_DIR/src/etc/greetd/config.toml" /etc/greetd/config.toml
 chown -R greeter:greeter /etc/greetd
 
 # --- 5. habilita o serviço -------------------------------------------------
+# Desativa qualquer DM ativo (sddm, gdm, lightdm)
+log "Desabilitando o Display Manager atual (ex: SDDM)..."
+CURRENT_DM=$(readlink /etc/systemd/system/display-manager.service 2>/dev/null || true)
+if [ -n "$CURRENT_DM" ]; then
+  DM_BASENAME=$(basename "$CURRENT_DM")
+  log "DM detectado: $DM_BASENAME"
+  systemctl disable "$DM_BASENAME" 2>/dev/null || true
+fi
 log "Habilitando greetd.service..."
-systemctl enable greetd.service >/dev/null
+systemctl enable greetd.service --force >/dev/null
 
-log "Pronto! Reinicie o sistema para ver o novo login screen."
+log "Pronto! Instalação concluída com sucesso."
+log "O Greetd agora é o seu gerenciador de login padrão."
+log "Reinicie o sistema para ver o novo login screen."
 log "Pra depurar sem reiniciar: sudo -u greeter cage -- quickshell -c orzhov-greeter"
