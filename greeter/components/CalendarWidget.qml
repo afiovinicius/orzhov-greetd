@@ -21,7 +21,7 @@ Text {
     font.pixelSize: 32
     font.weight: Font.Normal
     horizontalAlignment: Text.AlignHCenter
-    capitalization: Font.Capitalize
+    font.capitalization: Font.Capitalize
     style: Text.Raised
     styleColor: Qt.rgba(0.19, 0.19, 0.21, 0.5)
 }
