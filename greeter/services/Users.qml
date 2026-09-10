@@ -21,7 +21,7 @@ import Quickshell.Io
 * ============================================================================
 */
 
-Item {
+QtObject {
     id: root
 
     property var list: []
@@ -30,8 +30,8 @@ Item {
         function reload()
         { proc.running = true }
 
-            Process {
-                id: proc
+            // Declarando o Process como uma propriedade nomeada resolve o erro de default property
+            property Process proc: Process {
                 running: false
                 command: ["sh", "-c", "getent passwd | awk -F: '($3>=1000 && $3<60000 && $7 !~ /(nologin|false)$/) {print $1\"|\"$5\"|\"$6}'"]
 

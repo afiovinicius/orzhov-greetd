@@ -26,7 +26,7 @@ import Quickshell.Io
 * ============================================================================
 */
 
-Item {
+QtObject {
     id: root
 
     property var list: []
@@ -41,8 +41,8 @@ Item {
                         if (index >= 0 && index < list.length) currentIndex = index
                     }
 
-                    Process {
-                        id: proc
+                    // Declarando o Process como uma propriedade
+                    property Process proc: Process {
                         running: false
                         command: ["sh", "-c", "grep -H -E '^(Name|Exec)=' /usr/share/wayland-sessions/*.desktop /usr/share/xsessions/*.desktop 2>/dev/null"]
 

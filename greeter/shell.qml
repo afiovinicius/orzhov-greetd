@@ -105,7 +105,7 @@ PanelWindow {
                                                 function onReadyToLaunch()
                                                 {
                                                     var session = Sessions.current
-                                                    var execCmd = session ? session.exec: (Quickshell.env("SHELL") || "/bin/sh"))
+                                                    var execCmd = session ? session.exec: (Quickshell.env("SHELL") || "/bin/sh")
                                                     Greetd.launch(["sh", "-c", execCmd], [], true)
                                                 }
                                             }
