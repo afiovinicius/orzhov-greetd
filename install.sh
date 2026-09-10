@@ -61,7 +61,7 @@ chmod -R a+rX /etc/xdg/orzhov-greeter
 # --- 3. usuário greeter --------------------------------------------------
 if ! id greeter >/dev/null 2>&1; then
   log "Criando usuário 'greeter'..."
-  useradd -M -G video greeter
+  useradd -M -G input render sys video greeter
 fi
 
 # --- 4. config.toml do greetd (com backup) -------------------------------
