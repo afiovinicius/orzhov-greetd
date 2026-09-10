@@ -1,0 +1,15 @@
+# /etc/greetd/config.toml
+#
+# Referência: https://man.archlinux.org/man/greetd.5.en
+#
+# `command` roda como o usuário `greeter`. Trocamos o agreety padrão pelo
+# nosso launcher, que sobe o cage (compositor Wayland minimalista) com o
+# QuickShell dentro. O cage é quem dá a superfície fullscreen pro Quickshell
+# renderizar - não precisamos de layer-shell porque é o único client rodando.
+
+[terminal]
+vt = 1
+
+[default_session]
+command = "/usr/local/bin/orzhov-greeter-launcher"
+user = "greeter"
