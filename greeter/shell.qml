@@ -7,26 +7,6 @@ import Quickshell.Services.Greetd
 import "components"
 import "services"
 
-/*
-* ============================================================================
-* ORZHOV GREETER - SHELL.QML
-* ============================================================================
-* Fluxo de autenticação (Quickshell.Services.Greetd):
-*
-* 1. usuário escolhido -> Greetd.createSession(userName)
-* 2. greetd/PAM pedem algo -> authMessage(message, error, responseRequired, echoResponse)
-* responseRequired=true -> mostramos o campo e esperamos o usuário
-* responseRequired=false -> só exibimos a mensagem e respondemos "" pra
-* destravar o protocolo (alguns módulos PAM,
-* como fprintd, mandam avisos sem esperar texto)
-* 3. sucesso -> readyToLaunch() -> Greetd.launch(["sh", "-c", exec], [], true)
-* 4. falha -> authFailure(message) -> mostra erro, permite tentar de novo
-*
-* Rodando fora do greetd (preview/teste): Greetd.available fica false,
-* exibimos um aviso e a tela continua navegável pra visualizar o layout.
-* ============================================================================
-*/
-
 Window {
     id: window
 
@@ -36,7 +16,7 @@ Window {
 
     readonly property string backgroundPath: {
         var env = Quickshell.env("ORZHOV_BACKGROUND")
-        return (env && env !== "") ? env : Qt.resolvedUrl("assets/default-background.jpg")
+        return (env && env !== "") ? env : Qt.resolvedUrl("/etc/xdg/quickshell/orzhov-greeter/assets/default-background.jpg")
     }
 
     property string screenState: Users.list.length > 1 ? "select" : "password"
@@ -72,7 +52,8 @@ Window {
 
                                             function submitResponse(text)
                                             {
-                                                waitingResponse = false
+                                                waitingResponse = true
+                                                authError = false
                                                 if (Greetd.available) Greetd.respond(text)
                                                     }
 
@@ -105,7 +86,7 @@ Window {
 
                                                         if (responseRequired)
                                                         {
-                                                            waitingResponse = true
+                                                            waitingResponse = false
                                                             loginForm.clearAndFocus()
                                                         } else {
                                                         waitingResponse = false
@@ -125,14 +106,11 @@ Window {
                                                 function onReadyToLaunch()
                                                 {
                                                     var session = Sessions.current
-                                                    var execCmd = session ? session.exec: (Quickshell.env("SHELL") || "/bin/sh")
+                                                    var execCmd = ((session && session.exec) ? session.exec: (Quickshell.env("SHELL") || "/bin/sh"))
                                                     Greetd.launch(["sh", "-c", execCmd], [], true)
                                                 }
                                             }
 
-                                            // ==========================================
-                                            // BACKGROUND E APLICAÇÃO DO BLUR DE 24
-                                            // ==========================================
                                             Image {
                                                 id: background
                                                 anchors.fill: parent
@@ -282,9 +260,9 @@ Window {
                                                             id: loginButton
                                                             function trigger()
                                                             { window.submitResponse(passwordInput.text) }
-                                                                text: window.waitingResponse ? Translations.current.login : Translations.current.loggingIn
+                                                                text: window.waitingResponse ? Translations.current.loggingIn : Translations.current.login
                                                                 fullWidth: true
-                                                                enabledState: window.waitingResponse
+                                                                enabled: !window.waitingResponse
                                                                 anchors.horizontalCenter: parent.horizontalCenter
                                                                 onClicked: trigger()
                                                             }
@@ -299,9 +277,6 @@ Window {
                                                         }
                                                     }
 
-                                                    // ==========================================
-                                                    // RODAPÉ ESQUERDO: SELEÇÃO DE SESSÃO COM DROPDOWN E ÍCONE
-                                                    // ==========================================
                                                     Row {
                                                         anchors.left: parent.left
                                                         anchors.bottom: parent.bottom
@@ -330,9 +305,6 @@ Window {
                                                     // }
                                                 }
 
-                                                // ==========================================
-                                                // RODAPÉ DIREITO: OPÇÕES DE ENERGIA COM DROPDOWN E ÍCONE
-                                                // ==========================================
                                                 Row {
                                                     anchors.right: parent.right
                                                     anchors.bottom: parent.bottom
