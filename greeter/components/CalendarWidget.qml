@@ -13,8 +13,8 @@ Text {
     }
 
     text: now.toLocaleDateString(Qt.locale(), Qt.locale().name.toLowerCase().indexOf("pt") === 0
-                                  ? "dddd, dd 'de' MMMM 'de' yyyy"
-                                  : "dddd, MMMM dd, yyyy")
+    ? "dddd, dd 'de' MMMM 'de' yyyy"
+    : "dddd, MMMM dd, yyyy")
 
     color: "#F8F8F8"
     font.family: "Inter"
