@@ -313,7 +313,7 @@ PanelWindow {
                                                         }
                                                     }
 
-                                                    LayoutKbd
+                                                    // LayoutKbd
                                                 }
 
                                                 Row {

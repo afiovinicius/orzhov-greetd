@@ -48,7 +48,6 @@ QtObject {
                         if (index >= 0 && index < list.length) currentIndex = index
                     }
 
-                    // Declarando o Process como uma propriedade
                     property Process proc: Process {
                         running: false
                         command: ["sh", "-c", "grep -H -E '^(Name|Exec|DesktopNames)=' /usr/share/wayland-sessions/*.desktop /usr/share/xsessions/*.desktop 2>/dev/null"]
@@ -89,8 +88,6 @@ QtObject {
 
                                         var type = order[j].indexOf("wayland-sessions") >= 0 ? "wayland" : "x11"
 
-                                        // DesktopNames costuma vir "KDE" ou "KDE:GNOME" (lista separada
-                                        // por ':'); usamos só o primeiro pra XDG_CURRENT_DESKTOP/DESKTOP_SESSION
                                         var desktopNames = entry.DesktopNames || ""
                                         var primaryDesktop = desktopNames.split(":")[0] || entry.Name
 
