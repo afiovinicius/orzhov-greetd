@@ -7,12 +7,6 @@ import Quickshell.Services.Greetd
 import "components"
 import "services"
 
-// Antes, com o cage, usávamos `Window { visibility: Window.FullScreen }`
-// porque o cage não suporta wlr-layer-shell — só dá um fullscreen "cru".
-// Com o labwc (que suporta layer-shell) o PanelWindow vira uma superfície
-// de layer-shell de verdade: nunca recebe decoração (borda/titlebar) do
-// WM, e o Overlay garante que fica sempre por cima de qualquer outra
-// coisa que por acaso suba no compositor.
 PanelWindow {
     id: window
 
