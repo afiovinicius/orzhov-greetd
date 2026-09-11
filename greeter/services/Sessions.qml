@@ -13,14 +13,21 @@ import Quickshell.Io
 * /usr/share/wayland-sessions/*.desktop -> Hyprland, KDE Plasma (Wayland)...
 * /usr/share/xsessions/*.desktop -> KDE Plasma (X11), i3...
 *
-* Lemos Name= e Exec= de cada um com grep -H (prefixa o path), agrupamos
-* por arquivo em JS e guardamos o tipo (wayland/x11) pra decidir depois
-* como lançar a sessão.
+* Lemos Name=, Exec= e DesktopNames= de cada um com grep -H (prefixa o
+* path), agrupamos por arquivo em JS e guardamos o tipo (wayland/x11).
 *
-* list -> [{ name, exec, type }]
+* list -> [{ name, exec, type, env }]
+*
+* O `env` é o pulo do gato: sem XDG_CURRENT_DESKTOP/XDG_SESSION_DESKTOP
+* setados, DEs "pesados" como o Plasma não conseguem disparar os targets
+* systemd/dbus certos e a sessão nunca fica usável (o Hyprland não sente
+* falta disso por ser autocontido - por isso "só funciona no Hyprland").
+* Normalmente é o display manager quem injeta essas variáveis a partir do
+* DesktopNames= do .desktop; como o greetd não faz isso sozinho, fazemos
+* aqui.
 *
 * NOTA: sessões X11 (type "x11") ainda não têm o wrapper Xorg/xinit
-* embutido no launch() do Main.qml — funcionam nativamente as sessões
+* embutido no launch() do shell.qml — funcionam nativamente as sessões
 * Wayland (Hyprland, Plasma Wayland, GNOME Wayland etc). Se precisar de
 * X11 também, dá pra adicionar um wrapper `startx` depois.
 * ============================================================================
@@ -44,7 +51,7 @@ QtObject {
                     // Declarando o Process como uma propriedade
                     property Process proc: Process {
                         running: false
-                        command: ["sh", "-c", "grep -H -E '^(Name|Exec)=' /usr/share/wayland-sessions/*.desktop /usr/share/xsessions/*.desktop 2>/dev/null"]
+                        command: ["sh", "-c", "grep -H -E '^(Name|Exec|DesktopNames)=' /usr/share/wayland-sessions/*.desktop /usr/share/xsessions/*.desktop 2>/dev/null"]
 
                         stdout: StdioCollector {
                             onStreamFinished: {
@@ -80,19 +87,37 @@ QtObject {
                                         var entry = byPath[order[j]]
                                         if (!entry.Name || !entry.Exec) continue
 
-                                        sessions.push({
-                                        name: entry.Name,
-                                        exec: entry.Exec,
-                                        type: order[j].indexOf("wayland-sessions") >= 0 ? "wayland" : "x11"
-                                    })
-                                }
+                                        var type = order[j].indexOf("wayland-sessions") >= 0 ? "wayland" : "x11"
 
-                                root.list = sessions
-                                root.currentIndex = 0
-                                root.loaded = true
+                                        // DesktopNames costuma vir "KDE" ou "KDE:GNOME" (lista separada
+                                        // por ':'); usamos só o primeiro pra XDG_CURRENT_DESKTOP/DESKTOP_SESSION
+                                        var desktopNames = entry.DesktopNames || ""
+                                        var primaryDesktop = desktopNames.split(":")[0] || entry.Name
+
+                                        var env = [
+                                        "XDG_SESSION_TYPE=" + type,
+                                    ]
+                                    if (desktopNames !== "")
+                                    {
+                                        env.push("XDG_CURRENT_DESKTOP=" + desktopNames)
+                                        env.push("XDG_SESSION_DESKTOP=" + primaryDesktop)
+                                        env.push("DESKTOP_SESSION=" + primaryDesktop.toLowerCase())
+                                    }
+
+                                    sessions.push({
+                                    name: entry.Name,
+                                    exec: entry.Exec,
+                                    type: type,
+                                    env: env
+                                })
                             }
+
+                            root.list = sessions
+                            root.currentIndex = 0
+                            root.loaded = true
                         }
                     }
-
-                    Component.onCompleted: reload()
                 }
+
+                Component.onCompleted: reload()
+            }

@@ -1,10 +1,22 @@
 import QtQuick
+import "../services"
 
 Dropdown {
-  id: layoutDropdown
-  model: ["br", "us", "es", "fr"]
-  currentIndex: 0
-  onActivated: {
-    console.log("Layout selecionado: " + currentText + " (Requer reiniciar o compositor para aplicar no Cage)")
+  id: root
+
+  icon: "../assets/icon-keyboard.svg"
+
+  model: {
+    var names = []
+    for (var i = 0; i < Keyboards.list.length; i++) {
+      names.push(Keyboards.list[i].name)
+    }
+    return names
   }
+
+  currentIndex: Keyboards.currentIndex
+
+  onActivated: (index) => {
+  Keyboards.select(index)
+}
 }

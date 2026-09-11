@@ -103,8 +103,13 @@ PanelWindow {
                                                     authError = true
                                                     authErrorMessage = message !== "" ? message : Translations.current.wrongPassword
                                                     waitingResponse = false
+                                                    promptMessage = ""
                                                     loginForm.clearAndFocus()
                                                     loginForm.triggerShake()
+                                                    if (Greetd.available && window.activeUser !== "")
+                                                    {
+                                                        Greetd.createSession(window.activeUser)
+                                                    }
                                                 }
 
                                                 function onReadyToLaunch()
@@ -308,9 +313,7 @@ PanelWindow {
                                                         }
                                                     }
 
-                                                    // LayoutKbd {
-                                                    //     width: 90
-                                                    // }
+                                                    LayoutKbd
                                                 }
 
                                                 Row {
