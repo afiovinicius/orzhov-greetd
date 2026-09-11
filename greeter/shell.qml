@@ -106,6 +106,7 @@ PanelWindow {
                                                     promptMessage = ""
                                                     loginForm.clearAndFocus()
                                                     loginForm.triggerShake()
+
                                                     if (Greetd.available && window.activeUser !== "")
                                                     {
                                                         Greetd.createSession(window.activeUser)

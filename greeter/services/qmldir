@@ -1,4 +1,3 @@
 singleton Users Users.qml
 singleton Sessions Sessions.qml
 singleton Translations Translations.qml
-singleton Keyboards Keyboards.qml
