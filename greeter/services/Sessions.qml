@@ -86,7 +86,7 @@ QtObject {
                                         var entry = byPath[order[j]]
                                         if (!entry.Name || !entry.Exec) continue
 
-                                        var type = order[j].indexOf("wayland-sessions") >= 0 ? "wayland" : "x11"
+                                        var type = order[j].indexOf("/wayland-sessions/") >= 0 ? "wayland" : "x11"
 
                                         var desktopNames = entry.DesktopNames || ""
                                         var primaryDesktop = desktopNames.split(":")[0] || entry.Name
@@ -94,17 +94,27 @@ QtObject {
                                         var env = [
                                         "XDG_SESSION_TYPE=" + type,
                                     ]
+
                                     if (desktopNames !== "")
                                     {
                                         env.push("XDG_CURRENT_DESKTOP=" + desktopNames)
                                         env.push("XDG_SESSION_DESKTOP=" + primaryDesktop)
-                                        env.push("DESKTOP_SESSION=" + primaryDesktop.toLowerCase())
+                                        // env.push("DESKTOP_SESSION=" + primaryDesktop.toLowerCase())
+                                    }
+
+                                    var command = entry.Exec
+
+                                    if (primaryDesktop === "KDE")
+                                    {
+                                        env.push("DESKTOP_SESSION=plasma")
+                                        // command = "/usr/lib/plasma-dbus-run-session-if-needed /usr/bin/startplasma-wayland"
                                     }
 
                                     sessions.push({
                                     name: entry.Name,
-                                    exec: entry.Exec,
+                                    exec: command,
                                     type: type,
+                                    desktop: primaryDesktop,
                                     env: env
                                 })
                             }
