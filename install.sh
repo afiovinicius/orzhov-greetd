@@ -6,7 +6,7 @@
 #   sh -c "$(curl -fsSL https://raw.githubusercontent.com/afiovinicius/orzhov-greetd/main/install.sh)"
 #
 # O que este script faz:
-#   1. Confere dependências (greetd, cage, quickshell)
+#   1. Confere dependências (greetd, labwc, quickshell)
 #   2. Copia o launcher para /usr/local/bin
 #   3. Copia a config tela do greeter para /etc/xdg/orzhov-greeter
 #   4. Faz backup do /etc/greetd/config.toml atual (se existir) e aplica o novo
@@ -31,7 +31,7 @@ die()  { printf '\033[1;31m[orzhov]\033[0m %s\n' "$1" >&2; exit 1; }
 # --- 1. dependências ---------------------------------------------------
 log "Checando dependências..."
 missing=""
-for bin in greetd cage quickshell; do
+for bin in greetd labwc quickshell; do
   command -v "$bin" >/dev/null 2>&1 || missing="$missing $bin"
 done
 
@@ -39,9 +39,9 @@ if [ -n "$missing" ]; then
   warn "Faltando:$missing"
   if command -v pacman >/dev/null 2>&1; then
     log "Detectado pacman, instalando dependências..."
-    sudo pacman -S --needed --noconfirm greetd cage quickshell || die "Falha instalando dependências"
+    sudo pacman -S --needed --noconfirm greetd labwc quickshell || die "Falha instalando dependências"
   else
-    die "Instale manualmente:$missing (greetd, cage e quickshell) e rode o script de novo."
+    die "Instale manualmente:$missing (greetd, labwc e quickshell) e rode o script de novo."
   fi
 fi
 
@@ -93,4 +93,4 @@ systemctl enable greetd.service --force >/dev/null
 log "Pronto! Instalação concluída com sucesso."
 log "O Greetd agora é o seu gerenciador de login padrão."
 log "Reinicie o sistema para ver o novo login screen."
-log "Pra depurar sem reiniciar: sudo -u greeter cage -- quickshell -c orzhov-greeter"
+log "Pra depurar sem reiniciar: sudo -u greeter labwc -- quickshell -c orzhov-greeter"

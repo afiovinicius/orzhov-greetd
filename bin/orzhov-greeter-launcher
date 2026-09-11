@@ -1,12 +1,12 @@
 #!/bin/sh
 
-# Executado pelo greetd (usuário `greeter`). Sobe o cage - compositor
-# Wayland minimalista, sem layer-shell, mas suficiente pra uma única
-# superfície fullscreen - e dentro dele o QuickShell com a config
-# "orzhov-greeter" (instalada em /etc/xdg/orzhov-greeter).
+# Executado pelo greetd (usuário `greeter`). Sobe o labwc - compositor
+# Wayland stacking, com suporte a wlr-layer-shell - e dentro dele o
+# QuickShell com a config "orzhov-greeter" (instalada em
+# /etc/xdg/quickshell/orzhov-greeter).
 #
 # Troque o wallpaper sem mexer no QML: exporte ORZHOV_BACKGROUND antes do
-# cage subir (ex: outro script que gere esse env a partir de um arquivo
+# labwc subir (ex: outro script que gere esse env a partir de um arquivo
 # de config do sistema).
 
 set -e
@@ -19,6 +19,6 @@ export QT_QPA_PLATFORM=wayland
 export ORZHOV_BACKGROUND="${ORZHOV_BACKGROUND:-}"
 
 # descomente para depurar problemas de inicialização:
-# exec cage -- quickshell -c orzhov-greeter 2>>/var/log/orzhov-greeter.log
+# exec labwc -S "quickshell -c orzhov-greeter" 2>>/var/log/orzhov-greeter.log
 
-exec cage -s -- quickshell -c orzhov-greeter
+exec labwc -S "quickshell -c orzhov-greeter"

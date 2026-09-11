@@ -1,18 +1,36 @@
 import QtQuick
-import QtQuick.Window
 import Qt5Compat.GraphicalEffects
 import Quickshell
 import Quickshell.Io
+import Quickshell.Wayland
 import Quickshell.Services.Greetd
 import "components"
 import "services"
 
-Window {
+// Antes, com o cage, usávamos `Window { visibility: Window.FullScreen }`
+// porque o cage não suporta wlr-layer-shell — só dá um fullscreen "cru".
+// Com o labwc (que suporta layer-shell) o PanelWindow vira uma superfície
+// de layer-shell de verdade: nunca recebe decoração (borda/titlebar) do
+// WM, e o Overlay garante que fica sempre por cima de qualquer outra
+// coisa que por acaso suba no compositor.
+PanelWindow {
     id: window
 
-    visible: true
-    visibility: Window.FullScreen
+    anchors { top: true; bottom: true; left: true; right: true }
     color: "black"
+    focusable: true
+
+    Component.onCompleted: {
+        if (this.WlrLayershell != null)
+        {
+            this.WlrLayershell.layer = WlrLayer.Overlay
+            this.WlrLayershell.namespace = "orzhov-greeter"
+        }
+        if (Users.loaded && Users.list.length === 1)
+        {
+            window.pickUser(Users.list[0])
+        }
+    }
 
     readonly property string backgroundPath: {
         var env = Quickshell.env("ORZHOV_BACKGROUND")
@@ -68,13 +86,6 @@ Window {
                                                     }
                                                 }
 
-                                                Component.onCompleted: {
-                                                    if (Users.loaded && Users.list.length === 1)
-                                                    {
-                                                        window.pickUser(Users.list[0])
-                                                    }
-                                                }
-
                                                 Connections {
                                                     target: Greetd
 
@@ -126,7 +137,7 @@ Window {
                                             FastBlur {
                                                 anchors.fill: background
                                                 source: background
-                                                radius: 24
+                                                radius: 32
                                                 transparentBorder: false
                                             }
 
