@@ -83,13 +83,12 @@ Window {
                                                         promptMessage = message
                                                         promptEcho = echoResponse
                                                         authError = !!error
+                                                        waitingResponse = false
 
                                                         if (responseRequired)
                                                         {
-                                                            waitingResponse = false
                                                             loginForm.clearAndFocus()
                                                         } else {
-                                                        waitingResponse = false
                                                         Greetd.respond("")
                                                     }
                                                 }
